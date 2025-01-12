@@ -1,0 +1,32 @@
+# Dataset and file paths
+input_path: "../images/inputs.csv"
+
+# Model hyperparameters
+n_embd: 128
+image_embed_dim: 512
+vocab_size: 6666  # Adjusted based on your character encoding
+n_layer: 8
+img_size: 96
+patch_size: 16
+num_head: 8
+head_size: 16ml
+dropout: 0.1
+num_blks: 3
+emb_dropout: 0.1
+blk_dropout: 0.1
+
+# Training hyperparameters
+batch_size: 16
+val_batch_size: 8
+block_size: 32
+max_iters: 100
+eval_interval: 10
+learning_rate: 0.001
+epochs: 1
+eval_iters: 40
+hyperparameter_tuning: true  # Set to false to skip tuning
+n_trials: 10
+optimization_timeout: 3600  # in seconds
+weight_decay: 0.01
+
+
