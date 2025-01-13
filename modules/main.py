@@ -44,20 +44,6 @@ def load_text_data(config):
 config = parse_args()
 text = load_text_data(config)
 
-# def custom_trace_handler(base_dir):
-#     def handler(prof):
-#         # Generate the proper directory structure
-#         plugin_dir = os.path.join(base_dir, "plugins/profile")
-#         timestamp = torch.profiler._utils._format_time(prof.start_time)
-#         output_dir = os.path.join(plugin_dir, timestamp)
-#         os.makedirs(output_dir, exist_ok=True)
-        
-#         # Save the trace file in the correct directory
-#         tensorboard_trace_handler(output_dir)(prof)
-#         print(f"Trace saved to: {output_dir}")
-#     return handler
-
-# Configure the PyTorch Profiler
 profiler = profile(
     activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]
     if torch.cuda.is_available()
