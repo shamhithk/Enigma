@@ -27,7 +27,8 @@
 ├── requirements.txt                # Python dependencies
 └── training_loss.png               # Graph of training loss
 ```
-
+main.py - Has get_batch() and profiling
+main_DL.py - Uses DataLoader instead of get_batch() with mixed precision, 
 Execution:
 
 ```  python -m modules.main --config config.yaml```
