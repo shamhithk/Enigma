@@ -26,10 +26,14 @@
 ├── mlruns/                         # MLFlow experiment logs and artifacts
 ├── requirements.txt                # Python dependencies
 └── training_loss.png               # Graph of training loss
+
 ```
-main.py - Has get_batch() and profiling
-main_DL.py - Uses DataLoader instead of get_batch() with mixed precision, 
-Execution:
+- ```main.py``` - Has get_batch() and profiling, single_thread
+
+- ```main_DL.py``` - Uses DataLoader instead of get_batch() and profiling along with mixed precision, multi thread 
+
+
+##### Execution:
 
 ```  python -m modules.main --config config.yaml```
 
