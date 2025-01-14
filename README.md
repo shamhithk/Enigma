@@ -151,7 +151,6 @@ Optuna is primarily used to find the best hyperparameters for a model, while MLf
         mlflow.log_artifact("training_loss.png")
 ```
 
-![training_loss](https://github.com/user-attachments/assets/1b367b6b-f7a8-4afe-bf25-6e56fc7fcb36)
-
+![training_loss](https://github.com/user-attachments/assets/ce0e3416-6cc8-451b-a86c-201fa7f59e72)
 
 
