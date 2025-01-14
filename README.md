@@ -31,7 +31,7 @@ Execution:
 
 ```  python -m modules.main --config config.yaml```
 
-## Task 1: Configuring Hyperparameters through CLI
+# Task 1: Configuring Hyperparameters through CLI
 
 ### Configuring Hyperparameters via config.yaml
 
@@ -110,7 +110,7 @@ learning_rate = config['learning_rate']
 ```
 
 
-## Task 2: Simple solution  for hyperparameter management and tracking
+# Task 2: Simple solution  for hyperparameter management and tracking
 
 Optuna is an open-source framework specifically designed for hyperparameter optimization in machine learning
 
@@ -126,7 +126,7 @@ Optuna is an open-source framework specifically designed for hyperparameter opti
 
 
 
-## Task 3: Storing and Visualizing training loss():
+# Task 3: Storing and Visualizing training loss():
 
 MLflow is a open-source platform for managing the entire machine learning lifecycle, including experiment tracking, model management, and deployment.
 
@@ -157,7 +157,7 @@ Optuna is primarily used to find the best hyperparameters for a model, while MLf
 
 The plot provided shows the training loss decreasing over time during model training.
 
-## Task 4: Simple solution for profiling the training performance to identify bottlenecks in the model configuration
+# Task 4: Simple solution for profiling the training performance to identify bottlenecks in the model configuration
 
 torch.profiler is used to capture traces of model, which helps to optimize structure, compute and architecture.
 
@@ -238,7 +238,7 @@ Looking at top 100 is easier and can tell us imp information to find bottlenecks
 - Can add profiles for particular layers in model to identify more in depth what functions are taking more computing, time, etc.
 
 
-## Task 5: Include  best practices into the training to ensure the fastest performance possible (i.e. half precision, ...)
+# Task 5: Include  best practices into the training to ensure the fastest performance possible (i.e. half precision, ...)
 
 Tried  Data Loader, Mixed Precision with CPU and GPU handling
 
@@ -321,7 +321,7 @@ if scaler:
 - Integration with the optimizer step
 
 
-## Task 6: Extension of this training function in order to be scaleable to a multi-GPU or multi-node setting.
+# Task 6: Extension of this training function in order to be scaleable to a multi-GPU or multi-node setting.
 
 For efficient GPU / CPU scaling, I tried  pytorch ``` DDP  Distributed (Data Parallel) ```, Since I don't have access to multi GPU at the moment I was not able to run the code to check results, but my plan for the code is as follows
 
