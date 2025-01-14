@@ -104,7 +104,7 @@ batch_size = config['batch_size']
 learning_rate = config['learning_rate']
 ```
 
-Task 2: Simple solution  for hyperparameter management and tracking
+## Task 2: Simple solution  for hyperparameter management and tracking
 
 MLflow and Optuna tools are for hyperparameter tuning and management as shown below
 
