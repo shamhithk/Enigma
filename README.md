@@ -35,7 +35,9 @@
 
 ##### Execution:
 
-```  python -m modules.main --config config.yaml```
+- ```  python -m modules.main --config config.yaml```
+
+- ```  python -m modules.main_DL --config config.yaml```
 
 # Task 1: Configuring Hyperparameters through CLI
 
