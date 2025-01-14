@@ -10,6 +10,7 @@
 - optuna
 - matplotlib
 - torch.profiler
+- tensorboard
 - DataLoader
 - DistributedSampler
 - torch.distributed
