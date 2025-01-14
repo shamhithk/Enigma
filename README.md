@@ -226,12 +226,100 @@ I've also tried to write a simple python script to get top 100 events given a tr
 Looking at top 100 is easier and can tell us imp information to find bottlenecks
 
 
-### Taking all these into consideration , below are the potential bottleneck in model configuration:
+### Taking all traces I've run into consideration, below are the potential bottlenecks in model configuration:
 
 - Data Loading and Threading Bottlenecks
 - Backward Pass Inefficiency
 - Optimizer Performance
 - Can optimize forward pass by pruning or quantization
+
+
+## Task 5: Include  best practices into the training to ensure the fastest performance possible (i.e. half precision, ...)
+
+Tried  Data Loader , Mixed Precision with CPU and GPU handling
+
+### Data Loading Implementation:
+
+This code implements a custom dataset and data loader setup using PyTorch's utilities:
+```
+pythonCopyclass VisionLanguageDataset(Dataset):
+    def __init__(self, df, img_size=96):
+        self.df = df
+        self.img_size = img_size
+
+    def __getitem__(self, idx):
+        row = self.df.iloc[idx]
+        image = base64_to_tensor(row["b64string_images"], self.img_size)
+        text_indices = torch.tensor(encode(row["caption"]), dtype=torch.long)
+        
+        # Padding implementation for variable length sequences
+        max_length = text_indices.size(0)
+        padded_text = torch.full((max_length,), fill_value=stoi["<pad>"], dtype=torch.long)
+        padded_text[:len(text_indices)] = text_indices
+        targets = torch.cat([padded_text[1:], torch.tensor([stoi["<pad>"]], dtype=torch.long)])
+
+        return image, padded_text, targets
+```
+
+#### Key Data Loading features:
+
+- Custom collate function for handling variable length sequences
+```
+pythonCopydef collate_batch(batch):
+    images, texts, targets = zip(*batch)
+    images = torch.stack(images)
+    max_len = max(text.size(0) for text in texts)
+    padded_texts = torch.full((len(texts), max_len), fill_value=stoi["<pad>"], dtype=torch.long)
+    padded_targets = torch.full((len(targets), max_len), fill_value=stoi["<pad>"], dtype=torch.long)
+```
+- DataLoader configuration
+
+```
+pythonCopytrain_loader = DataLoader(
+    train_dataset, 
+    batch_size=config['batch_size'], 
+    shuffle=True, 
+    num_workers=4, 
+    pin_memory=True, 
+    collate_fn=collate_batch
+)
+```
+### Precision Techniques:
+
+Tried implementing mixed precision training using PyTorch's automatic mixed precision (AMP)
+```
+pythonCopyscaler = GradScaler() if device == "cuda" else None
+```
+The training loop uses precision optimization through
+```
+pythonCopywith autocast(device_type=device) if device == 'cuda' else nullcontext():
+    logits, loss = model(images, idx, targets)
+
+if scaler: 
+    scaler.scale(loss).backward()
+else: 
+    loss.backward()
+
+if scaler: 
+    scaler.step(optimizer)
+else: 
+    optimizer.step()
+
+if scaler: 
+    scaler.update()
+```
+
+#### Key precision features:
+
+- Conditional AMP implementation based on device availability
+- GradScaler for managing gradient scaling in mixed precision
+- Proper handling of both CUDA and CPU scenarios
+- Integration with the optimizer step
+
+
+## Task 6: Extension of this training function in order to be scaleable to a multi-GPU or multi-node setting.
+
+For efficient GPU / CPU scaling, I tried  pytorch ``` DDP  Distributed (Data Parallel) ``` 
 
 
 
