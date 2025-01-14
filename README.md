@@ -117,7 +117,7 @@ Optuna is an open-source framework specifically designed for hyperparameter opti
 
 ![Screenshot 2025-01-13 at 8 07 01 PM](https://github.com/user-attachments/assets/f053d22d-4bdb-4c20-8a70-fe236e5c2883)
 
-- Optuna is used for automated hyperparameter tuning.
+- Optuna is used for automated hyperparameter tuning and run ``` optuna-dashboard sqlite:///optuna_study.db``` this command to see dashboard
 - The study results are stored in an SQLite database (optuna_study.db).
 - Trials adjust learning rates, batch sizes, and embedding dimensions.
 
@@ -152,5 +152,63 @@ Optuna is primarily used to find the best hyperparameters for a model, while MLf
 ```
 
 ![training_loss](https://github.com/user-attachments/assets/ce0e3416-6cc8-451b-a86c-201fa7f59e72)
+
+The plot provided shows the training loss decreasing over time during model training.
+
+## Task 4: Simple solution for profiling the training performance to identify bottlenecks in the model configuration
+
+torch.profiler is used to capture traces of model, which helps to optimize structure, compute and architecture.
+
+The profiling is done using PyTorch's built-in profiler functionality during the model training phase.
+
+### First, the code imports the necessary profiling components from PyTorch:
+```
+pythonCopyfrom torch.profiler import profile, record_function, ProfilerActivity
+from torch.profiler import tensorboard_trace_handler
+```
+### In the ```train_model``` function, profiling is set up using a context manager with the following configuration:
+```
+pythonCopywith profile(
+    activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA] if torch.cuda.is_available() else [ProfilerActivity.CPU],
+    schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=1),
+    on_trace_ready=tensorboard_trace_handler('./profiling_logs'),
+    record_shapes=True,
+    with_stack=True,
+    with_flops=True
+) as prof:
+```
+#### Let's break down each profiling parameter:
+
+```activities:``` Specifies which hardware to profile
+
+- Profiles both CPU and CUDA (GPU) if CUDA is available
+- Otherwise, only profiles CPU activities
+
+
+```schedule:``` Defines the profiling schedule with four phases:
+
+- ```wait=1:``` Skip first step
+- ```warmup=1:``` Warmup for 1 step
+- ```active=3:``` Actively profile for 3 steps
+- ```repeat=1:``` Repeat this cycle once
+
+
+```on_trace_ready:``` Uses TensorBoard trace handler to save profiling results to './profiling_logs'
+```record_shapes:``` Enables recording of tensor shapes
+```with_stack:``` Records Python stack traces
+```with_flops:``` Enables calculation of floating point operations (FLOPS)
+
+
+### Inside the training loop, the profiler steps forward after each batch:
+
+```prof.step()```
+
+The profiling data collected includes:
+
+CPU and GPU utilization, Memory usage, Tensor shapes, Stack traces, Timeline of operations
+
+#### Trace of model:
+Trace is a ```.json```
+There are two ways to analyse 
 
 
