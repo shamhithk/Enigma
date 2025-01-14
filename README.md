@@ -208,7 +208,33 @@ The profiling data collected includes:
 CPU and GPU utilization, Memory usage, Tensor shapes, Stack traces, Timeline of operations
 
 #### Trace of model:
-Trace is a ```.json```
-There are two ways to analyse 
+Trace is a ```.json``` that contains all the information about model profiles
+
+
+We tried ```tensorboard``` or you can load the saved trace file to this site ```chrome://tracing ``` for visualization of these files
+
+### Chrome://tracing for a run on single thread
+<img width="1113" alt="Screenshot 2025-01-12 at 12 26 21 PM" src="https://github.com/user-attachments/assets/f17d39ff-0f5a-4410-a4d4-bae57a4ac790" />
+
+### Chrome://tracing for a run on multiple threads
+<img width="676" alt="Screenshot 2025-01-13 at 8 42 43 PM" src="https://github.com/user-attachments/assets/d59e3959-9b22-4699-b8f4-d9cdae03188b" />
+
+I've also tried to write a simple python script to get top 100 events given a trace file - ```top100_trace.ipynb```
+
+Looking at top 100 is easier and can tell us imp information to find bottlenecks
+
+
+### Taking all these into consideration , below are the potential bottleneck in model configuration:
+
+- Data Loading and Threading Bottlenecks
+- Backward Pass Inefficiency
+- Optimizer Performance
+- Can optimize forward pass by pruning or quantization
+
+
+
+
+
+
 
 
