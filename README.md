@@ -25,6 +25,9 @@
 └── training_loss.png               # Graph of training loss
 ```
 
+Execution:
+
+```  python -m modules.main --config config.yaml```
 
 ## Task 1: Configuring Hyperparameters through CLI
 
@@ -104,9 +107,50 @@ batch_size = config['batch_size']
 learning_rate = config['learning_rate']
 ```
 
+
 ## Task 2: Simple solution  for hyperparameter management and tracking
 
-MLflow and Optuna tools are for hyperparameter tuning and management as shown below
+Optuna is an open-source framework specifically designed for hyperparameter optimization in machine learning
 
+
+### Optuna: ##
+
+![][]
+
+- Optuna is used for automated hyperparameter tuning.
+- The study results are stored in an SQLite database (optuna_study.db).
+- Trials adjust learning rates, batch sizes, and embedding dimensions.
+
+
+
+
+## Task 3: Storing and Visualizing training loss():
+
+MLflow is a open-source platform for managing the entire machine learning lifecycle, including experiment tracking, model management, and deployment.
+
+### mlflow: ##
+
+![mlflow runs](https://github.com/user-attachments/assets/70cff627-c37a-434e-9ea6-ee94f6dc9fbc)
+
+- run this command ``` mlflow ui``` after training the model to check out mlflow dashboard
+- All hyperparameters are logged using MLFlow during training runs.
+- MLFlow records metrics like loss and validation loss for performance analysis.
+
+Optuna is primarily used to find the best hyperparameters for a model, while MLflow tracks and compares the results of different model configurations including those tuned with Optuna.
+
+### matplotlib.pyplot:
+```
+# Plot & save training loss
+        plt.figure(figsize=(10, 6))
+        plt.plot(train_losses, label='Training Loss')
+        plt.xlabel('Iterations')
+        plt.ylabel('Loss')
+        plt.title('Training Loss Over Time')
+        plt.legend()
+        plt.savefig("training_loss.png")
+        mlflow.log_artifact("training_loss.png")
+```
+
+![training_loss](https://github.com/user-attachments/assets/1b367b6b-f7a8-4afe-bf25-6e56fc7fcb36)
 
 
