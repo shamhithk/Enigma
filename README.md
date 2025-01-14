@@ -30,7 +30,7 @@
 ```
 - ```main.py``` - Has get_batch() and profiling, single_thread
 
-- ```main_DL.py``` - Uses DataLoader instead of get_batch() and profiling along with mixed precision, multi thread 
+- ```main_DL.py``` - Uses DataLoader instead of get_batch(), profiling along with mixed precision, multi thread 
 
 
 ##### Execution:
