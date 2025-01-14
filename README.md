@@ -115,7 +115,7 @@ Optuna is an open-source framework specifically designed for hyperparameter opti
 
 ### Optuna: ##
 
-![][]
+![Screenshot 2025-01-13 at 8 07 01 PM](https://github.com/user-attachments/assets/f053d22d-4bdb-4c20-8a70-fe236e5c2883)
 
 - Optuna is used for automated hyperparameter tuning.
 - The study results are stored in an SQLite database (optuna_study.db).
@@ -152,5 +152,6 @@ Optuna is primarily used to find the best hyperparameters for a model, while MLf
 ```
 
 ![training_loss](https://github.com/user-attachments/assets/1b367b6b-f7a8-4afe-bf25-6e56fc7fcb36)
+
 
 
