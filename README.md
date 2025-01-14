@@ -393,7 +393,7 @@ def setup_ddp(rank, world_size):
     
 ```
 
-- Modify ```main()``` 
+- Modify ```main()``` and use ``mp.spawn`` to create multiple processes
 ```
   ------
 ---------
