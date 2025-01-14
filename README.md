@@ -226,17 +226,21 @@ I've also tried to write a simple python script to get top 100 events given a tr
 Looking at top 100 is easier and can tell us imp information to find bottlenecks
 
 
-### Taking all traces I've run into consideration, below are the potential bottlenecks in model configuration:
+#### Taking all traces I've run into consideration, below are the potential bottlenecks in model configuration:
 
 - Data Loading and Threading Bottlenecks
 - Backward Pass Inefficiency
 - Optimizer Performance
 - Can optimize forward pass by pruning or quantization
 
+#### Improvements:
+- I observed taking too many profiles isn't ideal for model performance
+- Can add profiles for particular layers in model to identify more in depth what functions are taking more computing, time, etc.
+
 
 ## Task 5: Include  best practices into the training to ensure the fastest performance possible (i.e. half precision, ...)
 
-Tried  Data Loader , Mixed Precision with CPU and GPU handling
+Tried  Data Loader, Mixed Precision with CPU and GPU handling
 
 ### Data Loading Implementation:
 
@@ -319,11 +323,136 @@ if scaler:
 
 ## Task 6: Extension of this training function in order to be scaleable to a multi-GPU or multi-node setting.
 
-For efficient GPU / CPU scaling, I tried  pytorch ``` DDP  Distributed (Data Parallel) ``` 
+For efficient GPU / CPU scaling, I tried  pytorch ``` DDP  Distributed (Data Parallel) ```, Since I don't have access to multi GPU at the moment I was not able to run the code to check results, but my plan for the code is as follows
 
+###To enable multi-GPU utilization
 
+#### Setup and cleanup functions:
 
+- ``` setup_ddp()```: Initializes the distributed process group
+ ``` 
+def setup_ddp(rank, world_size):
+    """Initialize DDP process group"""
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    torch.cuda.set_device(rank)
 
+```
+- ``` cleanup_ddp():``` Cleans up the process group after training
+
+  ```
+  def cleanup_ddp():
+    """Clean up DDP process group"""
+    dist.destroy_process_group()
+ 
+  ```
+
+- Modify the ```train_model``` function to accomodate GPU utility
+```
+  def train_model(rank, world_size, model, df, config):
+    # Setup DDP
+    setup_ddp(rank, world_size)
+    
+    # Modify model for DDP
+    model = model.to(rank)
+    model = DDP(model, device_ids=[rank])
+-----
+------
+
+    train_sampler = DistributedSampler(train_dataset, 
+                                      num_replicas=world_size,
+                                      rank=rank)
+    val_sampler = DistributedSampler(val_dataset,
+                                    num_replicas=world_size,
+                                    rank=rank)
+
+# Create dataloaders with distributed samplers
+    train_loader = DataLoader(train_dataset, 
+                            batch_size=config['batch_size'],
+                            sampler=train_sampler,
+                            num_workers=4,
+                            pin_memory=True,
+                            collate_fn=collate_batch)
+    
+    val_loader = DataLoader(val_dataset,
+                          batch_size=config['batch_size'],
+                          sampler=val_sampler,
+                          num_workers=4,
+                          pin_memory=True,
+                          collate_fn=collate_batch)
+
+--------
+---------
+
+    # Clean up
+    cleanup_ddp()
+    if rank == 0:
+        mlflow.end_run()
+
+    
+```
+
+- Modify ```main()``` 
+```
+  ------
+---------
+
+# Get world size from available GPUs
+    world_size = torch.cuda.device_count()
+    
+    if world_size > 1:
+        # Spawn processes for DDP
+        import torch.multiprocessing as mp
+        mp.spawn(
+            train_model,
+            args=(world_size, model, df, config),
+            nprocs=world_size,
+            join=True
+        )
+    else:
+        print("No multiple GPUs found. Running on single GPU or CPU.")
+        train_model(0, 1, model, df, config)
+------
+------
+
+```
+- Modify ```estimate_loss ()``` to calculate avg_loss which is how GPU's learn and can paralelize
+
+Ambigous about the code, but I'm thinking something like below
+```
+ def estimate_loss(model, val_loader, rank):
+    """ 
+    Args:
+        model: DDP-wrapped model
+        val_loader: DataLoader with validation data
+        rank: Current device rank
+    """
+    model.eval()
+    total_loss = torch.zeros(1).to(rank)
+    total_samples = torch.zeros(1).to(rank)
+    
+    with torch.no_grad():
+        for images, idx, targets in val_loader:
+            images = images.to(rank)
+            idx = idx.to(rank)
+            targets = targets.to(rank)
+            
+            _, loss = model(images, idx, targets)
+            batch_loss = loss.item() * len(images)
+            total_loss += batch_loss
+            total_samples += len(images)
+    
+    # Synchronize statistics across all GPUs
+    dist.all_reduce(total_loss, op=dist.ReduceOp.SUM)
+    dist.all_reduce(total_samples, op=dist.ReduceOp.SUM)
+    
+    # Calculate average loss
+    avg_loss = total_loss.item() / total_samples.item()
+    
+    return avg_loss
+
+```
 
 
 
