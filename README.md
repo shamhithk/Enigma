@@ -1,5 +1,7 @@
 # Enigma ML Engineer Take Home Evaluation
 
+ Most changes are done in ```modules``` folder ```main.py```
+
 ## Frameworks / Libraries explored for the evaluation:
 - PyYAML
 - PyTorch
